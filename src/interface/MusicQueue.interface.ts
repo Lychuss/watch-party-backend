@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 
-export default interface MusicQueueInterface {
+export default interface MusicQueue {
     rooms_id: UUID,
     added_by: UUID,
     youtube_url: string,
