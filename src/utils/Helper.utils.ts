@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import { getUserEmail } from "../repository/User.repository";
+import { getRoomId } from "../repository/Room.repository";
+import { UUID } from "node:crypto";
 
 export const hashPassword = async (originalPassword: string): Promise<string> => {
     return bcrypt.hash(originalPassword, 10);
@@ -18,6 +20,11 @@ export const checkIfEmailExist = async (email: string): Promise<boolean> => {
     return false;
 }
 
-export const checkIfNotValidEmail = (email: string): boolean => {
-    return !email.includes("@") && !email.includes(".");
+export const getRoomIdIfExist = async (rooms_code: string): Promise<UUID | null> => {
+    const query = await getRoomId(rooms_code);
+    const data = query.rows[0];
+
+    if(!data) return null;
+
+    return data.rooms_id;
 }

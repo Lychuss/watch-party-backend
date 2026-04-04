@@ -17,20 +17,10 @@ export const createToken = (userId: UUID, username: string): string => {
     return token;
 }
 
-export const verify_token = (token: string) => {
+export const verify_token = async (token: string) => {
     try {
         return jwt.verify(token, process.env.SECRET_KEY!);
     } catch {
         return false;
     }
 };
-
-
-export const returnPayload = (token: string): PayLoad | null => {
-    try {
-        const decode: PayLoad = jwt.decode(token) as PayLoad;
-        return decode;
-    } catch(err) {
-        return null;
-    }
-}

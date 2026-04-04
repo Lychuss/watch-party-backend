@@ -23,7 +23,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
             return res.status(401).json({ message: "Your password is incorrect!", success: false });
         }
 
-        const token = await createToken(userData.users_id, userData.username);
+        const token = await createToken(userData?.users_id, userData?.username);
 
         res.cookie('token', token, {
             httpOnly: true,

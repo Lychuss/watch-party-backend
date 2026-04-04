@@ -1,6 +1,11 @@
+import { UUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { User } from "../schemas/User.schemas";
 import jwt from "jsonwebtoken";
+
+type PayLoad = {
+    userId: UUID, 
+    username: string
+}
 
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.token;
@@ -11,7 +16,8 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     if(!token) return res.status(401).json({message: 'You must have a token!', success: false});
 
     try {
-        const decode = jwt.verify(token, JWT_SECRET) as User;
+        const decode: PayLoad = jwt.verify(token, JWT_SECRET) as PayLoad;
+        (req as any).user = decode;
         next();
     } catch(err) {
         return res.status(401).json({

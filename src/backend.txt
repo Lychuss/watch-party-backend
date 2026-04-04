@@ -110,18 +110,17 @@ export const loginController = async (req: Request, res: Response, next: NextFun
 import { Response, Request, NextFunction } from "express";
 import { Room } from "../schemas/Room.schemas";
 import { createRoomAndGetData } from "../services/Room.service";
-import { returnPayload } from "../services/Token.service";
 
 
 export const roomController = async (req: Request, res: Response, next: NextFunction) => {
     const roomData: Room = req.body as Room;
 
-    const usersPayload = returnPayload(req.cookies?.token);
+    const usersPayload = (req as any).user;
 
-    if(!usersPayload?.userId) return res.status(401).json({ message: "Invalid Token Payload!", sucess: false });
+    if(!usersPayload.userId) return res.status(401).json({ message: "Invalid Token Payload!", success: false });
 
     try {
-        const roomsId = await createRoomAndGetData(roomData, usersPayload?.userId);
+        const roomsId = await createRoomAndGetData(roomData, usersPayload.userId);
 
         if(!roomsId) return res.status(400).json({ message: "Cannot create room!", success: false });
 
@@ -138,7 +137,7 @@ export const roomController = async (req: Request, res: Response, next: NextFunc
     }
 }===== C:\watch-party-backend\src\controllers\Signup.controller.ts ===== 
 import { Request, Response, NextFunction } from "express";
-import { hashPassword, checkIfEmailExist, checkIfNotValidEmail } from "../utils/Helper.utils";
+import { hashPassword, checkIfEmailExist } from "../utils/Helper.utils";
 import { addUser } from "../repository/User.repository";
 import { User } from "../schemas/User.schemas";
 
@@ -146,10 +145,6 @@ export const signUpController = async (req: Request, res: Response, next: NextFu
     const account: User = req.body as User;
 
     try {
-        if(await checkIfNotValidEmail(account.email)){
-            return res.status(400).json({ message: "Your email is not valid!", success: false });
-        }
-
         if(await checkIfEmailExist(account.email)){
             return res.status(400).json({ message: "Your email is already exist!", success: false });
         } 
@@ -164,9 +159,14 @@ export const signUpController = async (req: Request, res: Response, next: NextFu
         next(err);
     }
 }===== C:\watch-party-backend\src\middlewares\Authentication.middleware.ts ===== 
+import { UUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { User } from "../schemas/User.schemas";
 import jwt from "jsonwebtoken";
+
+type PayLoad = {
+    userId: UUID, 
+    username: string
+}
 
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.token;
@@ -177,7 +177,8 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     if(!token) return res.status(401).json({message: 'You must have a token!', success: false});
 
     try {
-        const decode = jwt.verify(token, JWT_SECRET) as User;
+        const decode: PayLoad = jwt.verify(token, JWT_SECRET) as PayLoad;
+        (req as any).user = decode;
         next();
     } catch(err) {
         return res.status(401).json({
@@ -365,23 +366,14 @@ export const createToken = (userId: UUID, username: string): string => {
     return token;
 }
 
-export const verify_token = (token: string) => {
+export const verify_token = async (token: string) => {
     try {
         return jwt.verify(token, process.env.SECRET_KEY!);
     } catch {
         return false;
     }
 };
-
-
-export const returnPayload = (token: string): PayLoad | null => {
-    try {
-        const decode: PayLoad = jwt.decode(token) as PayLoad;
-        return decode;
-    } catch(err) {
-        return null;
-    }
-}===== C:\watch-party-backend\src\socket\socket.ts ===== 
+===== C:\watch-party-backend\src\socket\socket.ts ===== 
 import { Server } from "socket.io";
 
 export const initSocket = (io: Server) => {
@@ -430,8 +422,4 @@ export const checkIfEmailExist = async (email: string): Promise<boolean> => {
     if(hasEmail) return true;
 
     return false;
-}
-
-export const checkIfNotValidEmail = (email: string): boolean => {
-    return !email.includes("@") && !email.includes(".");
 }
