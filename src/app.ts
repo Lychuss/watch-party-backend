@@ -4,7 +4,8 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import cors from "cors";
 import http from "http";
-import signUpRouter from "./routes/Signup.routes";
+import { signUpRouter } from "./routes/Signup.routes";
+import { loginRouter } from "./routes/Login.routes";
 
 const app = express();
 
@@ -13,7 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
-app.use("/watchparty", signUpRouter);
+//All routes for controllers
+app.use("/watchparty", signUpRouter, loginRouter);
 
 //Global Handler Error
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {

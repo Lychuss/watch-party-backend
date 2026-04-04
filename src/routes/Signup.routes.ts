@@ -1,8 +1,8 @@
 import express from "express";
-import { signUp } from "../controllers/Signup.controller";
+import { signUpController } from "../controllers/Signup.controller";
+import { userValidation } from "../schemas/User.schemas";
+import { validation } from "../middlewares/Validation.middleware";
 
-const signUpRouter = express.Router();
+export const signUpRouter = express.Router();
 
-signUpRouter.post("/authentication/signup",signUp);
-
-export default signUpRouter;
+signUpRouter.post("/authentication/signup", validation(userValidation), signUpController);

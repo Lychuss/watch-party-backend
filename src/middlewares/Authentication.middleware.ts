@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../interface/User.interface";
+import { User } from "../schemas/User.schemas";
 import jwt from "jsonwebtoken";
 
 export const authenticated = (req: Request, res: Response, next: NextFunction) => {

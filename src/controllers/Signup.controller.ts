@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { hashPassword, checkIfEmailExist, checkIfNotValidEmail } from "../utils/Helper.utils";
 import { addUser } from "../repository/User.repository";
-import User from "../interface/User.interface";
+import { User } from "../schemas/User.schemas";
 
-export const signUp = async (req: Request, res: Response, next: NextFunction) => {
-    const account = req.body as User;
-
-    if(!account.email || !account.password || !account.username) return res.status(404).json({ message: "All information must be fill up!", success: false });
+export const signUpController = async (req: Request, res: Response, next: NextFunction) => {
+    const account: User = req.body as User;
 
     if(await checkIfNotValidEmail(account.email)){
         return res.status(400).json({ message: "Your email is not valid!", success: false });

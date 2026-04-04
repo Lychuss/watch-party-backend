@@ -1,5 +1,5 @@
 import { pool } from "../config/Supabase.config";
-import User from "../interface/User.interface";
+import { User } from "../schemas/User.schemas";
 
 export const addUser = async (account: User, hashPassword: string) => {
     return await pool.query(
@@ -11,5 +11,11 @@ export const addUser = async (account: User, hashPassword: string) => {
 export const getUserEmail = async (email: string) => {
     return await pool.query(
         "SELECT * FROM users WHERE users.email = $1", [email]
+    );
+}
+
+export const getUserData = async (username: string) => {
+    return await pool.query(
+        "SELECT * FROM users WHERE users.username = $1", [username]
     );
 }

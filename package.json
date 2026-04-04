@@ -14,7 +14,8 @@
     "supabase": "^2.84.5",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
-    "ws": "^8.20.0"
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
   },
   "scripts": {
     "dev": "nodemon --exec ts-node src/app.ts",

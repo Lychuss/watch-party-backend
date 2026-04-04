@@ -1,13 +1,9 @@
 import { UUID } from "crypto";
 import jwt from "jsonwebtoken";
 
-type PayLoad = {
-    userId: UUID,
-    username: string
-}
 
-export const createToken = (data: PayLoad): string => {
-    const payLoad = {userId: data.userId, username: data.username} as PayLoad;
+export const createToken = (userId: UUID, username: string): string => {
+    const payLoad = {userId: userId, username: username};
     const JWT_SECRET = process.env.SECRET_KEY;
 
     if(!JWT_SECRET) throw new Error("JWT_SECRET must have a value!");
@@ -26,9 +22,9 @@ export const verify_token = (token: string) => {
 };
 
 
-export const returnPayload = (token: string): PayLoad | null => {
+export const returnPayload = (token: string) => {
     try {
-        const decode: PayLoad = jwt.decode(token) as PayLoad;
+        const decode = jwt.decode(token);
         return decode;
     } catch(err) {
         return null;

@@ -13,13 +13,11 @@ export const checkIfEmailExist = async (email: string): Promise<boolean> => {
     const checkEmail = await getUserEmail(email);
     const hasEmail = checkEmail.rows[0];
 
-    console.log(hasEmail.email);
-
     if(hasEmail) return true;
 
     return false;
 }
 
 export const checkIfNotValidEmail = (email: string): boolean => {
-    return !email.includes("@");
+    return !email.includes("@") && !email.includes(".");
 }
