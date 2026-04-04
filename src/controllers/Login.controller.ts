@@ -25,7 +25,16 @@ export const loginController = async (req: Request, res: Response, next: NextFun
 
         const token = await createToken(userData.users_id, userData.username);
 
-        return res.status(200).json({ message: "You have successfully login!", token: token, success: true });
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
+
+        return res.status(200).json({ 
+            message: "You have successfully login!", 
+            success: true 
+        });
         
     } catch(err) {
         next(err);

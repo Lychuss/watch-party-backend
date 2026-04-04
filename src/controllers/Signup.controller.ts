@@ -6,15 +6,14 @@ import { User } from "../schemas/User.schemas";
 export const signUpController = async (req: Request, res: Response, next: NextFunction) => {
     const account: User = req.body as User;
 
-    if(await checkIfNotValidEmail(account.email)){
-        return res.status(400).json({ message: "Your email is not valid!", success: false });
-    }
-
-    if(await checkIfEmailExist(account.email)){
-        return res.status(400).json({ message: "Your email is already exist!", success: false });
-    } 
-
     try {
+        if(await checkIfNotValidEmail(account.email)){
+            return res.status(400).json({ message: "Your email is not valid!", success: false });
+        }
+
+        if(await checkIfEmailExist(account.email)){
+            return res.status(400).json({ message: "Your email is already exist!", success: false });
+        } 
         //Hashed the password before sending to database
         const hashedPassword: string = await hashPassword(account.password);
 

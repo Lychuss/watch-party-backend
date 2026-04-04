@@ -1,6 +1,10 @@
 import { UUID } from "crypto";
 import jwt from "jsonwebtoken";
 
+type PayLoad = {
+    userId: UUID, 
+    username: string
+}
 
 export const createToken = (userId: UUID, username: string): string => {
     const payLoad = {userId: userId, username: username};
@@ -22,9 +26,9 @@ export const verify_token = (token: string) => {
 };
 
 
-export const returnPayload = (token: string) => {
+export const returnPayload = (token: string): PayLoad | null => {
     try {
-        const decode = jwt.decode(token);
+        const decode: PayLoad = jwt.decode(token) as PayLoad;
         return decode;
     } catch(err) {
         return null;

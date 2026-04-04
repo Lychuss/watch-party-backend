@@ -4,8 +4,12 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import cors from "cors";
 import http from "http";
+import { initSocket } from "./socket/socket";
+
+//All router 
 import { signUpRouter } from "./routes/Signup.routes";
 import { loginRouter } from "./routes/Login.routes";
+import { roomRouter } from "./routes/Room.routes";
 
 const app = express();
 
@@ -15,7 +19,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 //All routes for controllers
-app.use("/watchparty", signUpRouter, loginRouter);
+app.use("/watchparty", signUpRouter, loginRouter, roomRouter);
 
 //Global Handler Error
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -34,7 +38,6 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -43,31 +46,7 @@ const io = new Server(server, {
     }
 });
 
-//WebSocket Connection to the users
-io.on("connection", (socket) => {
-        console.log("User has joined the room", socket.id);
-
-    socket.on("join-room", (roomId) => {
-        socket.join(roomId);
-        console.log("User joined room " + roomId);
-    });
-
-    socket.on("offer", ({ roomId, offer }) => {
-        socket.to(roomId).emit("offer", offer);
-    });
-
-    socket.on("answer", ({ roomId, answer }) => {
-        socket.to(roomId).emit("answer", answer);
-    });
-
-    socket.on("candidate", ({ roomId, candidate }) => {
-        socket.to(roomId).emit("candidate", candidate);
-    });
-
-    socket.on("disconnect", () => {
-        console.log("User disconnected", socket.id);
-    });
-})
+initSocket(io);
 
 server.listen(5000, "0.0.0.0", () => {
     console.log("Server port 5000 is listening...");
